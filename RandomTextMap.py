@@ -5,10 +5,10 @@ class RandomTextMap:
 
     def print_map(self):
         for row in self.matrix:
+            string = ""
             for cell in row:
-                sys.stdout.write(str(cell))
-
-            print
+                string = string + str(cell)
+            print(string)
 
     def __add_water_neighbor_to_queue(self, h, w, deque):
         if h > 0 and self.matrix[h-1][w] != '#':
@@ -25,8 +25,8 @@ class RandomTextMap:
         self.height = height
         self.width = width
 
-        height_seeds = [randrange(0, height) for i in xrange(num_island_seeds)]
-        width_seeds = [randrange(0, width) for i in xrange(num_island_seeds)]
+        height_seeds = [randrange(0, height) for i in range(num_island_seeds)]
+        width_seeds = [randrange(0, width) for i in range(num_island_seeds)]
         seeds = zip(height_seeds, width_seeds)
 
         coast = deque()
