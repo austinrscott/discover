@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+# Import pygame
 import pygame
 from pygame.locals import *
 
@@ -33,8 +34,7 @@ def main():
         for event in pygame.event.get():
             if event.type == QUIT:
                 return
-            elif event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
+            elif event.type == KEYDOWN and event.key == K_ESCAPE:
                     quit()
 
         screen.blit(background, (0, 0))
