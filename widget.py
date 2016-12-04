@@ -9,7 +9,7 @@ class Widget():
         self._rect = pygame.Rect(rect)
 
     def _init_surface(self):
-        self._surface = pygame.Surface(self._rect.size)
+        self._surface = pygame.Surface(self._rect.size).convert_alpha()
 
     def render(self):
         pass
@@ -52,8 +52,7 @@ class ContainerWidget(Widget):
             self._surface.blit(widget.get_surface(), widget.get_rect())
 
 
-class MapWidget(Widget):
-    # TODO: Make MapWidget a child of ContainerWidget so that it can hold MapEntities
+class MapWidget(ContainerWidget):
     def __init__(self, pos=(0, 0)):
         # Initialize map variables and the map model
         self._tile_size = 8
@@ -65,8 +64,7 @@ class MapWidget(Widget):
                                       land_water_ratio=0.4)
 
         # Create MapWidget's Rect (via the superclass's constructor)
-        super().__init__((pos, self._get_map_size()))
-        self.render()
+        super().__init__((pos, self._get_map_size()), MapEntity((15,15), tile_size=self._tile_size))
 
     def event(self, e):
         if e.type == MOUSEBUTTONDOWN and e.button == 1 and self._rect.collidepoint(e.pos):
@@ -81,8 +79,8 @@ class MapWidget(Widget):
     def _get_map_size(self):
         return self._grid_size[0] * self._tile_size, self._grid_size[1] * self._tile_size
 
-    def render(self):
-        self._init_surface()
+    def _init_surface(self):
+        super()._init_surface()
         matrix = self._map_obj.output_map()
         self._surface.fill((25, 25, 125))
         for y in range(self._grid_size[1]):
@@ -107,5 +105,5 @@ class MapEntity(Widget):
         self._rect.move_ip(to_pos[0] * self._tile_size, to_pos[1] * self._tile_size)
 
     def render(self):
-        self._surface = pygame.Surface((self._tile_size, self._tile_size))
-        pygame.draw.circle(self._surface, self._color, self._surface.get_rect().center)
+        self._surface = pygame.Surface((self._tile_size, self._tile_size)).convert_alpha()
+        pygame.draw.circle(self._surface, self._color, self._surface.get_rect().center, self._tile_size // 2)

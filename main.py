@@ -19,8 +19,6 @@ def main():
     # Initialize map
     root.add(MapWidget(pos=[25, 25]))
 
-    # TODO: Initialize the player ship.
-
     # Event loop
     while 1:
         for event in pygame.event.get():
