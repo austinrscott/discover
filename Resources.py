@@ -74,6 +74,21 @@ class Settlement:
         self.inv.display()
         self.market.display()
 
+
+class Ship:
+
+    def __init__(self, name, pos):
+        self.name = name
+        self.inv = Inventory()
+        self.pos = pos
+
+    def move(self, new_pos):
+        self.pos = new_pos
+
+    def get_pos(self):
+        return self.pos
+
+
 port_angeles = Settlement("Port Angeles")
 ship_inv = Inventory()
 
