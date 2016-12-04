@@ -2,6 +2,8 @@
 
 # Import pygame
 import pygame
+from pygame.locals import *
+
 # Import map class
 from widget import ContainerWidget, Map
 
