@@ -70,21 +70,30 @@ class ContainerWidget(Widget):
             widget.render()
             self._surface.blit(widget.get_surface(), widget.get_rect())
 
+
 class Map(Widget):
     def __init__(self, rect=None):
-        self._map_obj = RandomTextMap(width=145,
-                                      height=145,
+        self._tile_size = 4
+        self._grid_size = [145,145]
+        self._map_obj = RandomTextMap(width=self._grid_size[0],
+                                      height=self._grid_size[1],
                                       water_chance=0.01,
                                       num_island_seeds=40,
                                       land_water_ratio=0.4)
         self.render()
         super().__init__(self._surface.get_rect())
 
+    def event(self, e):
+        if e.type == MOUSEBUTTONDOWN and e.button == 0:
+            cell_clicked = self._find_cell(e.pos)
+
+    def _find_cell(self, pos):
+        x, y = pos[0], pos[1]
+
+
     def render(self):
         matrix = self._map_obj.output_map()
-        grid_x, grid_y = len(matrix), len(matrix[0])
-        tile_size = 4
-        new_surface = pygame.Surface((grid_x * tile_size, grid_y * tile_size))
+        new_surface = pygame.Surface((self._grid_size[0] * self._tile_size, self._grid_size[1] * self._tile_size))
         new_surface.fill((25, 25, 125))
         for y in range(grid_y):
             for x in range(grid_x):
