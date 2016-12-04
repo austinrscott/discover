@@ -6,6 +6,7 @@ from RandomTextMap import RandomTextMap
 class Widget():
     def __init__(self, rect):
         self._rect = pygame.Rect(rect)
+        self._dirty = True
 
     def _init_surface(self):
         self._surface = pygame.Surface(self._rect.size).convert_alpha()
@@ -15,6 +16,9 @@ class Widget():
 
     def event(self, e):
         pass
+
+    def is_dirty(self):
+        return self._dirty
 
     def get_rect(self):
         return self._rect
@@ -38,6 +42,7 @@ class ContainerWidget(Widget):
 
     def add(self, widget):
         self._widgets.append(widget)
+        self._dirty = True
 
     def event(self, e):
         e.pos = self._event_get_new_pos(e.pos)
@@ -45,10 +50,15 @@ class ContainerWidget(Widget):
             widget.event(e)
 
     def render(self):
-        self._init_surface()
         for widget in self._widgets:
-            widget.render()
-            self._surface.blit(widget.get_surface(), widget.get_rect())
+            if widget.is_dirty():
+                widget.render()
+                self._dirty = True
+        if self.is_dirty():
+            self._init_surface()
+            for widget in self._widgets:
+                self._surface.blit(widget.get_surface(), widget.get_rect())
+            self._dirty = False
 
 
 class MapWidget(ContainerWidget):
@@ -107,3 +117,4 @@ class MapEntity(Widget):
     def render(self):
         self._surface = pygame.Surface((self._tile_size, self._tile_size)).convert_alpha()
         pygame.draw.circle(self._surface, self._color, self._surface.get_rect().center, self._tile_size // 2)
+        self._dirty = False
