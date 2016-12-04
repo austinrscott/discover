@@ -49,11 +49,14 @@ class ContainerWidget(Widget):
         for widget in self._widgets:
             widget.event(e)
 
-    def render(self):
+    def is_dirty(self):
         for widget in self._widgets:
             if widget.is_dirty():
                 widget.render()
                 self._dirty = True
+        return self._dirty
+
+    def render(self):
         if self.is_dirty():
             self._init_surface()
             for widget in self._widgets:
@@ -79,7 +82,8 @@ class MapWidget(ContainerWidget):
         if e.type == MOUSEBUTTONDOWN and e.button == 1 and self._rect.collidepoint(e.pos):
             e.pos = self._event_get_new_pos(e.pos)
             cell_clicked = self._find_cell(e.pos)
-            print(cell_clicked)
+            for widget in self._widgets:
+                widget.move(cell_clicked)
 
     def _find_cell(self, pos):
         x, y = pos[0], pos[1]
@@ -89,6 +93,7 @@ class MapWidget(ContainerWidget):
         return self._grid_size[0] * self._tile_size, self._grid_size[1] * self._tile_size
 
     def _init_surface(self):
+        print("Rendered map")
         super()._init_surface()
         matrix = self._map_obj.output_map()
         self._surface.fill((25, 25, 125))
@@ -112,7 +117,9 @@ class MapEntity(Widget):
         self.move(map_pos)
 
     def move(self, to_pos):
-        self._rect.move_ip(to_pos[0] * self._tile_size, to_pos[1] * self._tile_size)
+        self._rect.move_ip(to_pos[0] * self._tile_size - self._rect.left,
+                           to_pos[1] * self._tile_size - self._rect.top)
+        self._dirty = True
 
     def render(self):
         self._surface = pygame.Surface((self._tile_size, self._tile_size)).convert_alpha()
