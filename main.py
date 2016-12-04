@@ -86,10 +86,11 @@ class Map(Widget):
     def event(self, e):
         if e.type == MOUSEBUTTONDOWN and e.button == 0:
             cell_clicked = self._find_cell(e.pos)
+            print(cell_clicked)
 
     def _find_cell(self, pos):
         x, y = pos[0], pos[1]
-
+        return [x // self._tile_size, y // self._tile_size]
 
     def render(self):
         matrix = self._map_obj.output_map()
