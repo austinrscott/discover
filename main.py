@@ -3,7 +3,6 @@
 # Import pygame
 import pygame
 from pygame.locals import *
-
 # Import map class
 from RandomTextMap import RandomTextMap
 
@@ -27,6 +26,8 @@ def main():
                 return
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 quit()
+            elif event.type == MOUSEBUTTONDOWN:
+                root.event(event)
         root.render()
         screen.blit(root.get_surface(), (0, 0))
         pygame.display.flip()
@@ -36,9 +37,6 @@ class Widget():
     def __init__(self, rect):
         self._rect = pygame.Rect(rect)
         self._surface = None
-
-    def onclick(self):
-        pass
 
     def event(self, e):
         pass
@@ -65,11 +63,9 @@ class ContainerWidget(Widget):
     def add(self, widget):
         self._widgets.append(widget)
 
-    def onclick(self):
-        pass
-
     def event(self, e):
-        pass
+        for widget in self._widgets:
+            widget.event(e)
 
     def render(self):
         self._surface = pygame.Surface((self._rect.width, self._rect.height))
@@ -80,24 +76,34 @@ class ContainerWidget(Widget):
 
 class Map(Widget):
     def __init__(self, rect=None):
-        self._map_obj = RandomTextMap(width=145,
-                                      height=145,
+        self._tile_size = 4
+        self._grid_size = [145,145]
+        self._map_obj = RandomTextMap(width=self._grid_size[0],
+                                      height=self._grid_size[1],
                                       water_chance=0.01,
                                       num_island_seeds=40,
                                       land_water_ratio=0.4)
         self.render()
         super().__init__(self._surface.get_rect())
 
+    def event(self, e):
+        if e.type == MOUSEBUTTONDOWN and e.button == 1:
+            cell_clicked = self._find_cell(e.pos)
+            print(cell_clicked)
+
+    def _find_cell(self, pos):
+        x, y = pos[0], pos[1]
+        return [x // self._tile_size, y // self._tile_size]
+
     def render(self):
         matrix = self._map_obj.output_map()
-        grid_x, grid_y = len(matrix), len(matrix[0])
-        tile_size = 4
-        new_surface = pygame.Surface((grid_x * tile_size, grid_y * tile_size))
+        new_surface = pygame.Surface((self._grid_size[0] * self._tile_size, self._grid_size[1] * self._tile_size))
         new_surface.fill((25, 25, 125))
-        for y in range(grid_y):
-            for x in range(grid_x):
+        for y in range(self._grid_size[1]):
+            for x in range(self._grid_size[0]):
                 if matrix[y][x] == '#':
-                    new_surface.fill((25, 125, 25), (x * tile_size, y * tile_size, tile_size, tile_size))
+                    new_surface.fill((25, 125, 25),
+                                     (x * self._tile_size, y * self._tile_size, self._tile_size, self._tile_size))
         self._surface = new_surface
 
 
