@@ -2,10 +2,17 @@ import pygame
 from pygame.locals import *
 from RandomTextMap import RandomTextMap
 
+# TODO: Change it so that Widgets initialize rects before initializing their display surfaces.
 
 class Widget():
     def __init__(self, rect):
         self._rect = pygame.Rect(rect)
+
+    def _init_surface(self):
+        self._surface = pygame.Surface(self._rect.size)
+
+    def render(self):
+        pass
 
     def event(self, e):
         pass
@@ -19,9 +26,6 @@ class Widget():
     def _event_get_new_pos(self, pos):
         new_pos = [pos[0] - self._rect.left, pos[1] - self._rect.top]
         return new_pos
-
-    def render(self):
-        pass
 
 
 class ContainerWidget(Widget):
@@ -42,14 +46,16 @@ class ContainerWidget(Widget):
             widget.event(e)
 
     def render(self):
-        self._surface = pygame.Surface((self._rect.width, self._rect.height))
+        self._init_surface()
         for widget in self._widgets:
             widget.render()
             self._surface.blit(widget.get_surface(), widget.get_rect())
 
 
 class MapWidget(Widget):
-    def __init__(self, rect=None, pos=None):
+    # TODO: Make MapWidget a child of ContainerWidget so that it can hold MapEntities
+    def __init__(self, pos=(0, 0)):
+        # Initialize map variables and the map model
         self._tile_size = 8
         self._grid_size = [70, 70]
         self._map_obj = RandomTextMap(width=self._grid_size[0],
@@ -57,11 +63,9 @@ class MapWidget(Widget):
                                       water_chance=0.01,
                                       num_island_seeds=40,
                                       land_water_ratio=0.4)
-        self._create_map_surface()
-        new_rect = self._surface.get_rect()
-        if pos:
-            new_rect.move_ip(pos[0], pos[1])
-        super().__init__(new_rect)
+
+        # Create MapWidget's Rect (via the superclass's constructor)
+        super().__init__((pos, self._get_map_size()))
         self.render()
 
     def event(self, e):
@@ -74,10 +78,11 @@ class MapWidget(Widget):
         x, y = pos[0], pos[1]
         return [x // self._tile_size, y // self._tile_size]
 
-    def _create_map_surface(self):
-        self._surface = pygame.Surface((self._grid_size[0] * self._tile_size, self._grid_size[1] * self._tile_size))
+    def _get_map_size(self):
+        return self._grid_size[0] * self._tile_size, self._grid_size[1] * self._tile_size
 
     def render(self):
+        self._init_surface()
         matrix = self._map_obj.output_map()
         self._surface.fill((25, 25, 125))
         for y in range(self._grid_size[1]):
