@@ -62,7 +62,8 @@ class ContainerWidget(Widget):
         self._widgets.append(widget)
 
     def event(self, e):
-        pass
+        for widget in self._widgets:
+            widget.event(e)
 
     def render(self):
         self._surface = pygame.Surface((self._rect.width, self._rect.height))
