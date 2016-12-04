@@ -3,7 +3,6 @@
 # Import pygame
 import pygame
 from pygame.locals import *
-
 # Import map class
 from RandomTextMap import RandomTextMap
 
@@ -37,9 +36,6 @@ class Widget():
         self._rect = pygame.Rect(rect)
         self._surface = None
 
-    def onclick(self):
-        pass
-
     def event(self, e):
         pass
 
@@ -65,9 +61,6 @@ class ContainerWidget(Widget):
     def add(self, widget):
         self._widgets.append(widget)
 
-    def onclick(self):
-        pass
-
     def event(self, e):
         pass
 
@@ -76,7 +69,6 @@ class ContainerWidget(Widget):
         for widget in self._widgets:
             widget.render()
             self._surface.blit(widget.get_surface(), widget.get_rect())
-
 
 class Map(Widget):
     def __init__(self, rect=None):
