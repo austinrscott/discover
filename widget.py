@@ -49,7 +49,6 @@ class ContainerWidget(Widget):
 
 
 class MapWidget(Widget):
-    # TODO: Link all MapWidget data to an actual Map model (in a different class).
     def __init__(self, rect=None, pos=None):
         self._tile_size = 8
         self._grid_size = [70, 70]

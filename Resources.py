@@ -73,7 +73,6 @@ class Settlement:
 
 
 class Ship():
-    # TODO: Figure out how to link an instance of Ship to a MapEntity instance.
     def __init__(self, name, pos):
         self.name = name
         self.inv = Inventory()
