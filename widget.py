@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from RandomTextMap import RandomTextMap
 
+
 class Widget():
     def __init__(self, rect):
         self._rect = pygame.Rect(rect)
@@ -62,7 +63,7 @@ class MapWidget(ContainerWidget):
                                       land_water_ratio=0.4)
 
         # Create MapWidget's Rect (via the superclass's constructor)
-        super().__init__((pos, self._get_map_size()), MapEntity((15,15), tile_size=self._tile_size))
+        super().__init__((pos, self._get_map_size()), MapEntity((15, 15), tile_size=self._tile_size))
 
     def event(self, e):
         if e.type == MOUSEBUTTONDOWN and e.button == 1 and self._rect.collidepoint(e.pos):
@@ -92,6 +93,7 @@ class MapEntity(Widget):
     """
     Something that exists on the map besides a tile. Ship, port, et cetera.
     """
+
     def __init__(self, map_pos, tile_size, color=(255, 255, 255)):
         self._tile_size = tile_size
         self._color = color

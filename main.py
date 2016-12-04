@@ -8,10 +8,13 @@ from widget import ContainerWidget, MapWidget
 
 
 def main():
-    # Initialise screen
+    # Initialize screen
     pygame.init()
     screen = pygame.display.set_mode((800, 600))
     pygame.display.set_caption('Discover')
+
+    # Initialize FPS clock
+    fps_clock = pygame.time.Clock()
 
     # Initialize root widget
     root = ContainerWidget(screen.get_rect())
@@ -21,6 +24,9 @@ def main():
 
     # Event loop
     while 1:
+        # Tick the game clock and capture FPS data to the window caption
+        fps_clock.tick()
+        pygame.display.set_caption('Discover — FPS: {:.2f}'.format(fps_clock.get_fps()))
         for event in pygame.event.get():
             if event.type == QUIT:
                 return
