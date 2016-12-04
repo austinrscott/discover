@@ -52,10 +52,7 @@ class RandomTextMap:
             else:
                 coast.append((h, w))
 
-
-        self.print_map()
-
-
-random_map = RandomTextMap(height=100,width=100, water_chance=.3, num_island_seeds=8, land_water_ratio=.3)
+    def output_map(self):
+        return self.matrix
 
 
