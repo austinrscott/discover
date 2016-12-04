@@ -2,8 +2,6 @@ import pygame
 from pygame.locals import *
 from RandomTextMap import RandomTextMap
 
-# TODO: Change it so that Widgets initialize rects before initializing their display surfaces.
-
 class Widget():
     def __init__(self, rect):
         self._rect = pygame.Rect(rect)
