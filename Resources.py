@@ -3,14 +3,12 @@ from random import random, randrange
 
 
 class Resources(Enum):
-
     Food = 1
     Water = 2
     Gold = 3
 
 
 class ResourcePrice:
-
     def __init__(self, res, price):
         self.res = res
         self.price = price
@@ -23,7 +21,6 @@ class ResourcePrice:
 
 
 class Market:
-
     def __init__(self):
         self.prices = {res: randrange(100) for res in list(Resources)}
 
@@ -34,8 +31,8 @@ class Market:
         for key in self.prices:
             print("{0} for ${1}".format(key, self.prices[key]))
 
-class Inventory:
 
+class Inventory:
     def __init__(self):
         self.inventory = {res: 0 for res in list(Resources)}
 
@@ -56,8 +53,8 @@ class Inventory:
         for key in self.inventory:
             print("{0} : {1}".format(key, self.inventory[key]))
 
-class Settlement:
 
+class Settlement:
     def __init__(self, name):
         self.name = name
         self.market = Market()
@@ -75,8 +72,8 @@ class Settlement:
         self.market.display()
 
 
-class Ship:
-
+class Ship():
+    # TODO: Figure out how to link an instance of Ship to a MapEntity instance.
     def __init__(self, name, pos):
         self.name = name
         self.inv = Inventory()
@@ -97,4 +94,3 @@ print(port_angeles.sell(Resources.Gold, 10, ship_inv))
 port_angeles.display()
 print("-----------------------------------")
 ship_inv.display()
-

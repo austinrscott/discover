@@ -1,6 +1,5 @@
 import pygame
 from pygame.locals import *
-
 from RandomTextMap import RandomTextMap
 
 
@@ -49,7 +48,8 @@ class ContainerWidget(Widget):
             self._surface.blit(widget.get_surface(), widget.get_rect())
 
 
-class Map(Widget):
+class MapWidget(Widget):
+    # TODO: Link all MapWidget data to an actual Map model (in a different class).
     def __init__(self, rect=None, pos=None):
         self._tile_size = 8
         self._grid_size = [70, 70]
@@ -86,3 +86,9 @@ class Map(Widget):
                 if matrix[y][x] == '#':
                     self._surface.fill((25, 125, 25),
                                        (x * self._tile_size, y * self._tile_size, self._tile_size, self._tile_size))
+
+
+class MapEntity(Widget):
+    # TODO: Write the code for a MapEntity to be displayed.
+    # A Widget to represent an object on the map; ship, port, et cetera.
+    pass

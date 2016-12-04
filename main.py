@@ -3,9 +3,8 @@
 # Import pygame
 import pygame
 from pygame.locals import *
-
 # Import map class
-from widget import ContainerWidget, Map
+from widget import ContainerWidget, MapWidget
 
 
 def main():
@@ -18,7 +17,9 @@ def main():
     root = ContainerWidget(screen.get_rect())
 
     # Initialize map
-    root.add(Map(pos=[25, 25]))
+    root.add(MapWidget(pos=[25, 25]))
+
+    # TODO: Initialize the player ship.
 
     # Event loop
     while 1:
