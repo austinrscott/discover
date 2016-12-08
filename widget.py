@@ -76,7 +76,9 @@ class MapWidget(ContainerWidget):
                                       land_water_ratio=0.4)
 
         # Create MapWidget's Rect (via the superclass's constructor)
-        super().__init__((pos, self._get_map_size()), MapEntity((15, 15), tile_size=self._tile_size))
+        test_object = MapPath([(0,0), (1,0), (1,1), (1,2), (2,2), (2,3), (2,4), (2,5)],
+                              self._tile_size)
+        super().__init__((pos, self._get_map_size()), test_object)
 
     def event(self, e):
         if e.type == MOUSEBUTTONDOWN and e.button == 1 and self._rect.collidepoint(e.pos):
@@ -136,7 +138,7 @@ class MapPath(MapEntity):
 
     def __init__(self, path, tile_size, color=(255, 255, 255)):
         self._path = path
-        super().__init__(min(x for (x, y) in path), min(y for (x, y) in path), tile_size, color)
+        super().__init__((min(x for (x, y) in path), min(y for (x, y) in path)), tile_size, color)
 
     def render(self):
         width_in_tiles = abs(min(x for (x, y) in self._path) - max(x for (x, y) in self._path)) + 1
@@ -148,8 +150,8 @@ class MapPath(MapEntity):
             relative_x, relative_y = x - self._map_pos[0], y - self._map_pos[1]
             pygame.draw.rect(self._surface,
                              self._color,
-                             pygame.Rect(relative_x,
-                                         relative_y,
+                             pygame.Rect(relative_x * self._tile_size,
+                                         relative_y * self._tile_size,
                                          self._tile_size,
                                          self._tile_size))
         self._dirty = False
