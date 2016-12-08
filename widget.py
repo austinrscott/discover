@@ -163,3 +163,33 @@ class MapPath(MapEntity):
                                          self._tile_size,
                                          self._tile_size))
         self._dirty = False
+
+class Button(Widget):
+    # TODO: Add some formatting to button (space between text and border)
+    # TODO: Add more complex functionality with button (left, right click)
+    # TODO: Add responsiveness to button (change color upon click)
+    def __init__(self, pos, text="Button", onclick=None):
+        self.font = pygame.font.SysFont("Arial", 24)
+        self._rect = (pos, self.font.size(text))
+        self._text = text
+        if onclick:
+            self._onclick_func = onclick
+        super().__init__(self._rect)
+
+    def _onclick_func(self):
+        print("Button {} has been clicked.".format(self._text))
+
+    def _onclick(self):
+        self._onclick_func()
+
+    def _init_surface(self):
+        self._surface = self.font.render(self._text, True, (255,255,255))
+
+    def render(self):
+        self._init_surface()
+        pygame.draw.rect(self._surface, (255,255,255), self._surface.get_rect(), 2)
+
+    def event(self, e):
+        if self._rect.collidepoint(e.pos):
+            self._onclick()
+

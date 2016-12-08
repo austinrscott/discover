@@ -4,7 +4,7 @@
 import pygame
 from pygame.locals import *
 # Import map class
-from widget import ContainerWidget, MapWidget
+from widget import ContainerWidget, MapWidget, Button
 
 
 def main():
@@ -21,6 +21,7 @@ def main():
 
     # Initialize map
     root.add(MapWidget(pos=[25, 25]))
+    root.add(Button(pos=[600, 25]))
 
     # Event loop
     while 1:
