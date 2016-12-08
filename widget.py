@@ -1,6 +1,7 @@
 import pygame
 from pygame.locals import *
 from RandomTextMap import RandomTextMap
+from random import randint
 
 
 class Widget():
@@ -9,7 +10,7 @@ class Widget():
         self._dirty = True
 
     def _init_surface(self):
-        self._surface = pygame.Surface(self._rect.size).convert_alpha()
+        self._surface = pygame.Surface(self._rect.size, SRCALPHA).convert_alpha()
 
     def render(self):
         pass
@@ -67,8 +68,8 @@ class ContainerWidget(Widget):
 class MapWidget(ContainerWidget):
     def __init__(self, pos=(0, 0)):
         # Initialize map variables and the map model
-        self._tile_size = 8
-        self._grid_size = [70, 70]
+        self._tile_size = 4
+        self._grid_size = [140, 140]
         self._map_obj = RandomTextMap(width=self._grid_size[0],
                                       height=self._grid_size[1],
                                       water_chance=0.01,
@@ -76,7 +77,13 @@ class MapWidget(ContainerWidget):
                                       land_water_ratio=0.4)
 
         # Create MapWidget's Rect (via the superclass's constructor)
-        test_object = MapPath([(0,0), (1,0), (1,1), (1,2), (2,2), (2,3), (2,4), (2,5)],
+        map_path = self._map_obj.water_route_to(0, 0, self._grid_size[1] - 1, self._grid_size[0] - 1)
+        while not map_path:
+            map_path = self._map_obj.water_route_to(randint(0, self._grid_size[1] - 1),
+                                                    randint(0, self._grid_size[0] - 1),
+                                                    randint(0, self._grid_size[1] - 1),
+                                                    randint(0, self._grid_size[0] - 1))
+        test_object = MapPath(map_path,
                               self._tile_size)
         super().__init__((pos, self._get_map_size()), test_object)
 
@@ -125,7 +132,7 @@ class MapEntity(Widget):
         self._dirty = True
 
     def render(self):
-        self._surface = pygame.Surface((self._tile_size, self._tile_size)).convert_alpha()
+        self._surface = pygame.Surface((self._tile_size, self._tile_size), SRCALPHA).convert_alpha()
         pygame.draw.circle(self._surface, self._color, self._surface.get_rect().center, self._tile_size // 2)
         self._dirty = False
 
@@ -136,16 +143,17 @@ class MapPath(MapEntity):
     the coordinates in the path)
     """
 
-    def __init__(self, path, tile_size, color=(255, 255, 255)):
+    def __init__(self, path, tile_size, color=(255, 255, 255, 64)):
         self._path = path
-        super().__init__((min(x for (x, y) in path), min(y for (x, y) in path)), tile_size, color)
+        super().__init__((min(x for (y, x) in path), min(y for (y, x) in path)), tile_size, color)
 
     def render(self):
-        width_in_tiles = abs(min(x for (x, y) in self._path) - max(x for (x, y) in self._path)) + 1
-        height_in_tiles = abs(min(y for (x, y) in self._path) - max(y for (x, y) in self._path)) + 1
+        width_in_tiles = abs(min(x for (y, x) in self._path) - max(x for (y, x) in self._path)) + 1
+        height_in_tiles = abs(min(y for (y, x) in self._path) - max(y for (y, x) in self._path)) + 1
         self._surface = pygame.Surface((self._tile_size * width_in_tiles,
-                                        self._tile_size * height_in_tiles)).convert_alpha()
-        for (x,y) in self._path:
+                                        self._tile_size * height_in_tiles),
+                                       SRCALPHA).convert_alpha()
+        for (y, x) in self._path:
             # For the purposes of rendering, the top left corner of this surface counts as (0, 0)
             relative_x, relative_y = x - self._map_pos[0], y - self._map_pos[1]
             pygame.draw.rect(self._surface,
