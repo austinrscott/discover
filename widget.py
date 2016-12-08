@@ -104,6 +104,30 @@ class MapWidget(ContainerWidget):
                                        (x * self._tile_size, y * self._tile_size, self._tile_size, self._tile_size))
 
 
+class MapEntity(Widget):
+    """
+    Something that exists on the map besides a tile. Ship, port, et cetera.
+    """
+
+    def __init__(self, map_pos, tile_size, color=(255, 255, 255)):
+        self._tile_size = tile_size
+        self._color = color
+        self._map_pos = map_pos
+        self.render()
+        super().__init__(self._surface.get_rect())
+        self.move(map_pos)
+
+    def move(self, to_pos):
+        self._rect.move_ip(to_pos[0] * self._tile_size - self._rect.left,
+                           to_pos[1] * self._tile_size - self._rect.top)
+        self._dirty = True
+
+    def render(self):
+        self._surface = pygame.Surface((self._tile_size, self._tile_size)).convert_alpha()
+        pygame.draw.circle(self._surface, self._color, self._surface.get_rect().center, self._tile_size // 2)
+        self._dirty = False
+
+
 class MapPath(MapEntity):
     """
     A path between two cells on a map, given by an ordered list of coordinates (the 0th element being a tuple of
@@ -128,28 +152,4 @@ class MapPath(MapEntity):
                                          relative_y,
                                          self._tile_size,
                                          self._tile_size))
-        self._dirty = False
-
-
-class MapEntity(Widget):
-    """
-    Something that exists on the map besides a tile. Ship, port, et cetera.
-    """
-
-    def __init__(self, map_pos, tile_size, color=(255, 255, 255)):
-        self._tile_size = tile_size
-        self._color = color
-        self._map_pos = map_pos
-        self.render()
-        super().__init__(self._surface.get_rect())
-        self.move(map_pos)
-
-    def move(self, to_pos):
-        self._rect.move_ip(to_pos[0] * self._tile_size - self._rect.left,
-                           to_pos[1] * self._tile_size - self._rect.top)
-        self._dirty = True
-
-    def render(self):
-        self._surface = pygame.Surface((self._tile_size, self._tile_size)).convert_alpha()
-        pygame.draw.circle(self._surface, self._color, self._surface.get_rect().center, self._tile_size // 2)
         self._dirty = False
