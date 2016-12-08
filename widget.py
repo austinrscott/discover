@@ -104,6 +104,33 @@ class MapWidget(ContainerWidget):
                                        (x * self._tile_size, y * self._tile_size, self._tile_size, self._tile_size))
 
 
+class MapPath(MapEntity):
+    """
+    A path between two cells on a map, given by an ordered list of coordinates (the 0th element being a tuple of
+    the coordinates in the path)
+    """
+
+    def __init__(self, path, tile_size, color=(255, 255, 255)):
+        self._path = path
+        super().__init__(min(x for (x, y) in path), min(y for (x, y) in path), tile_size, color)
+
+    def render(self):
+        width_in_tiles = abs(min(x for (x, y) in self._path) - max(x for (x, y) in self._path)) + 1
+        height_in_tiles = abs(min(y for (x, y) in self._path) - max(y for (x, y) in self._path)) + 1
+        self._surface = pygame.Surface((self._tile_size * width_in_tiles,
+                                        self._tile_size * height_in_tiles)).convert_alpha()
+        for (x,y) in self._path:
+            # For the purposes of rendering, the top left corner of this surface counts as (0, 0)
+            relative_x, relative_y = x - self._map_pos[0], y - self._map_pos[1]
+            pygame.draw.rect(self._surface,
+                             self._color,
+                             pygame.Rect(relative_x,
+                                         relative_y,
+                                         self._tile_size,
+                                         self._tile_size))
+        self._dirty = False
+
+
 class MapEntity(Widget):
     """
     Something that exists on the map besides a tile. Ship, port, et cetera.
@@ -112,6 +139,7 @@ class MapEntity(Widget):
     def __init__(self, map_pos, tile_size, color=(255, 255, 255)):
         self._tile_size = tile_size
         self._color = color
+        self._map_pos = map_pos
         self.render()
         super().__init__(self._surface.get_rect())
         self.move(map_pos)

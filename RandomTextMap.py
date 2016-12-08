@@ -1,9 +1,8 @@
 import sys
 from random import random, randrange
 from collections import deque
-
-
 class RandomTextMap:
+
     def print_map(self):
         for row in self.matrix:
             string = ""
@@ -57,13 +56,13 @@ class RandomTextMap:
         return list(path)[1:]
 
     def __add_water_neighbor_to_queue(self, h, w, deque):
-        if h > 0 and self.matrix[h - 1][w] != '#':
+        if h > 0 and self.matrix[h-1][w] != '#':
             deque.append((h - 1, w))
-        if h < self.height - 1 and self.matrix[h + 1][w] != '#':
+        if h < self.height - 1 and self.matrix[h+1][w] != '#':
             deque.append((h + 1, w))
-        if w > 0 and self.matrix[h][w - 1] != '#':
+        if w > 0 and self.matrix[h][w-1] != '#':
             deque.append((h, w - 1))
-        if w < self.width - 1 and self.matrix[h][w + 1] != '#':
+        if w < self.width - 1 and self.matrix[h][w+1] != '#':
             deque.append((h, w + 1))
 
     def __init__(self, width, height, water_chance, num_island_seeds, land_water_ratio):
@@ -78,7 +77,7 @@ class RandomTextMap:
         coast = deque()
         for (h, w) in seeds:
             self.matrix[h][w] = '#'
-            self.__add_water_neighbor_to_queue(h, w, coast)
+            self.__add_water_neighbor_to_queue(h,w, coast)
 
         # self.print_map()
         # print
@@ -91,9 +90,9 @@ class RandomTextMap:
 
             if (random() < water_chance):
                 self.matrix[h][w] = '#'
-                self.__add_water_neighbor_to_queue(h, w, coast)
+                self.__add_water_neighbor_to_queue(h,w, coast)
                 land += 1
-                if (land / land_water_ratio >= self.height * self.width):
+                if (land/land_water_ratio >= self.height * self.width):
                     break
             else:
                 coast.append((h, w))
