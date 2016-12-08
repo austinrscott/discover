@@ -52,11 +52,3 @@ class RandomTextMap:
 
     def output_map(self):
         return self.matrix
-
-    def find_path(self, starting_path, end):
-        pass
-# TODO: Install pathfinding algorithm
-# Starting_path is any part of the path that has been discovered.
-# Find neighboring cells to the last cell of starting_path
-# If one of the neighboring cells is end, add it to the path and return the whole path
-# Otherwise, add the cell to the path which is most likely to lead to end, and run find_path on that.
