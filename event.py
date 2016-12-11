@@ -8,6 +8,8 @@ tutorial@ezide.com
 
 from weakref import WeakKeyDictionary
 
+from pygame.time import Clock
+
 
 def debug(msg):
     print(msg)
@@ -22,8 +24,10 @@ class Event:
 
 
 class TickEvent(Event):
-    def __init__(self):
+    def __init__(self, time_elapsed, fps):
         self.name = "Event — Tick"
+        self.time_elapsed = time_elapsed
+        self.fps = fps
 
 
 class QuitEvent(Event):
@@ -77,12 +81,12 @@ class ClockController:
     def __init__(self, event_manager):
         self.event_manager = event_manager
         self.event_manager.register_listener(self)
-
+        self._clock = Clock()
         self.application_active = True
 
     def run(self):
         while self.application_active:
-            event = TickEvent()
+            event = TickEvent(self._clock.tick(), self._clock.get_fps())
             self.event_manager.post(event)
 
     def notify(self, event):

@@ -18,6 +18,7 @@ class InputController:
 
     def notify(self, inbound_event):
         if isinstance(inbound_event, TickEvent):
+
             # Parse SDL events from Pygame and interpret them for game events
             for SDL_event in pygame.event.get([QUIT,
                                                KEYDOWN,

@@ -466,6 +466,9 @@ class Display():
     def notify(self, event):
         self._root_widget.notify(event)
         if isinstance(event, TickEvent):
+            # Update FPS
+            pygame.display.set_caption('Discover — FPS: {:0.2f}'.format(event.fps))
+
             # Refresh display
             self._window.fill((64, 64, 64))
             self._window.blit(self._root_widget.surface, (0, 0))
