@@ -2,42 +2,28 @@
 
 # Import pygame
 import pygame
-from pygame.locals import *
-# Import map class
-from widget import ContainerWidget, MapWidget, Button
+
+from display import Display
+from event import EventManager, ClockController
+from game import GameModel
+from input import InputController
 
 
 def main():
-    # Initialize screen
+    # Initialize pygame
     pygame.init()
-    screen = pygame.display.set_mode((800, 600))
-    pygame.display.set_caption('Discover')
 
-    # Initialize FPS clock
-    fps_clock = pygame.time.Clock()
+    # Initialize event manager
+    event_manager = EventManager()
 
-    # Initialize root widget
-    root = ContainerWidget(screen.get_rect())
+    # Initialize display, input, and game data
+    display_manager = Display(event_manager)
+    input_manager = InputController(event_manager)
+    game_model = GameModel(event_manager)
+    clock = ClockController(event_manager)
 
-    # Initialize map
-    root.add(MapWidget(pos=[25, 25]))
-    root.add(Button(pos=[600, 25]))
-
-    # Event loop
-    while 1:
-        # Tick the game clock and capture FPS data to the window caption
-        fps_clock.tick()
-        pygame.display.set_caption('Discover — FPS: {:.2f}'.format(fps_clock.get_fps()))
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                return
-            elif event.type == KEYDOWN and event.key == K_ESCAPE:
-                quit()
-            elif event.type == MOUSEBUTTONDOWN:
-                root.event(event)
-        root.render()
-        screen.blit(root.get_surface(), (0, 0))
-        pygame.display.flip()
+    # Run game
+    clock.run()
 
 
 if __name__ == '__main__':
