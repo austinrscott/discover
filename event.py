@@ -91,6 +91,7 @@ class MouseDraggingEvent(Event):
         self.pos = pos
         self.rel = relative_motion
 
+
 class GameStartedEvent(Event):
     def __init__(self, game):
         """
