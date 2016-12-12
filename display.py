@@ -128,6 +128,7 @@ class MapTile(Widget):
     position on the map but it does hold its position in the map grid as X, Y coordinates."""
 
     # TODO: MapTiles need to hold both their grid position and need to know their absolute position on the map now.
+    # TODO: When MapTiles get clicked, they need to post an event to the event manager.
     def __init__(self, tile_size, pos, type):
         self.tile_size = tile_size
         self._type = type
