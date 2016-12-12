@@ -18,11 +18,17 @@ class GameModel:
 
         self.state = GameModel.STATE_LOADING
 
-        self._map = RandomTextMap(70, 70, 0.01, 20, 0.35)
+        self.generate_map((70, 70), 0.01, 20, 0.3)
+        # This is where all loading code would go
+
+    def generate_map(self, grid_size, water_chance, num_seeds, land_water_ratio):
+        self._map = RandomTextMap(*grid_size,
+                                  water_chance=water_chance,
+                                  num_island_seeds=num_seeds,
+                                  land_water_ratio=land_water_ratio)
         self._map.print_map()
         event = MapGeneratedEvent(self._map.output_map())
         self.event_manager.post(event)
-        # This is where all loading code would go
 
     def start(self):
         self.state = GameModel.STATE_RUNNING

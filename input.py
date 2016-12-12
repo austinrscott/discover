@@ -2,7 +2,19 @@ import pygame
 from pygame.constants import QUIT, KEYDOWN, KEYUP, MOUSEMOTION, MOUSEBUTTONUP, MOUSEBUTTONDOWN, JOYAXISMOTION, \
     JOYBALLMOTION, JOYHATMOTION, JOYBUTTONUP, JOYBUTTONDOWN, K_ESCAPE, K_KP_MINUS, K_KP_PLUS
 
-from event import TickEvent, QuitEvent, MapZoomEvent
+from event import TickEvent, QuitEvent, MapZoomEvent, MouseClickEvent, MouseDragEvent, MouseDraggingEvent
+
+PYGAME_EVENTS_RECOGNIZED = [QUIT,
+                            KEYDOWN,
+                            KEYUP,
+                            MOUSEMOTION,
+                            MOUSEBUTTONUP,
+                            MOUSEBUTTONDOWN,
+                            JOYAXISMOTION,
+                            JOYBALLMOTION,
+                            JOYHATMOTION,
+                            JOYBUTTONUP,
+                            JOYBUTTONDOWN]
 
 
 class InputController:
@@ -15,36 +27,72 @@ class InputController:
     def __init__(self, event_manager):
         self.event_manager = event_manager
         self.event_manager.register_listener(self)
+        self._left_click = False
+        self._left_click_pos = False
+        self._right_click = False
+        self._right_click_pos = False
+
+    def mouse_click(self, button, pos):
+        if button == 1:
+            self._left_click = 1
+            self._left_click_pos = pos
+        elif button == 3:
+            self._right_click = 1
+            self._right_click_pos = pos
+
+    def mouse_motion(self, pos, relative):
+        if self._right_click >= 150:
+            new_event = MouseDraggingEvent(pos, relative)
+            self.event_manager.post(new_event)
+
+    def mouse_release(self, button, pos):
+        if button == 1:
+            if self._left_click <= 500:
+                new_event = MouseClickEvent(button, pos)
+                self.event_manager.post(new_event)
+            # Left-click MouseDragEvent unused
+            # else:
+            #     new_event = MouseDragEvent(button, self._left_click_pos, pos)
+            #     self.event_manager.post(new_event)
+            self._left_click = False
+
+        elif button == 3:
+            if self._right_click <= 500:
+                new_event = MouseClickEvent(button, pos)
+                self.event_manager.post(new_event)
+            # Right-click MouseDragEvent unused
+            # else:
+            #     new_event = MouseDragEvent(button, self._right_click_pos, pos)
+            #     self.event_manager.post(new_event)
+            self._right_click = False
 
     def notify(self, inbound_event):
         if isinstance(inbound_event, TickEvent):
+            # If one of the mouse buttons has been pressed, keep the time rolling (to interpret it as a "click" or as a
+            # "drag"
+            if self._left_click:
+                self._left_click += inbound_event.time_elapsed
+            if self._right_click:
+                self._right_click += inbound_event.time_elapsed
 
             # Parse SDL events from Pygame and interpret them for game events
-            for SDL_event in pygame.event.get([QUIT,
-                                               KEYDOWN,
-                                               KEYUP,
-                                               MOUSEMOTION,
-                                               MOUSEBUTTONUP,
-                                               MOUSEBUTTONDOWN,
-                                               JOYAXISMOTION,
-                                               JOYBALLMOTION,
-                                               JOYHATMOTION,
-                                               JOYBUTTONUP,
-                                               JOYBUTTONDOWN]):
+            for SDL_event in pygame.event.get(PYGAME_EVENTS_RECOGNIZED):
                 outbound_event = None
                 if SDL_event.type == QUIT:
                     outbound_event = QuitEvent()
-                elif SDL_event.type == KEYDOWN \
-                        and SDL_event.key == K_ESCAPE:
+                elif SDL_event.type == KEYDOWN and SDL_event.key == K_ESCAPE:
                     outbound_event = QuitEvent()
-                elif SDL_event.type == KEYDOWN \
-                        and SDL_event.key == K_KP_PLUS:
-                    outbound_event = MapZoomEvent(2)
-                elif SDL_event.type == KEYDOWN \
-                        and SDL_event.key == K_KP_MINUS:
-                    outbound_event = MapZoomEvent(-2)
                 elif SDL_event.type == MOUSEBUTTONDOWN:
-                    raise NotImplementedError("Mouse control not implemented yet")
-
+                    if SDL_event.button == 1 or SDL_event.button == 3:
+                        self.mouse_click(SDL_event.button, SDL_event.pos)
+                    elif SDL_event.button == 4:
+                        outbound_event = MapZoomEvent(1)
+                    elif SDL_event.button == 5:
+                        outbound_event = MapZoomEvent(-1)
+                elif SDL_event.type == MOUSEBUTTONUP:
+                    if SDL_event.button == 1 or SDL_event.button == 3:
+                        self.mouse_release(SDL_event.button, SDL_event.pos)
+                elif SDL_event.type == MOUSEMOTION:
+                    self.mouse_motion(SDL_event.pos, SDL_event.rel)
                 if outbound_event:
                     self.event_manager.post(outbound_event)
